@@ -46,7 +46,7 @@ int main() {
         do {
             printf("Enter your guess (1-%d):\n", MAX);
             if (scanf("%d", &guess) != 1 || guess < 1 || guess > MAX) {
-                printf("Invalid input. Please enter a positive integer between 1 and 100.\n");
+                printf("Invalid input. Please enter a positive integer between 1 and %d.\n", MAX);
                 while ((getchar()) != '\n');
                 continue;
             }
