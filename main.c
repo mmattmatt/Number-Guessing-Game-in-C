@@ -2,72 +2,96 @@
 #include <stdlib.h>
 #include <time.h>
 
-int main() {
+// function to get valid user input
+int get_valid_input() {
     int guess;
-    int guess_limit;
-    int guesses = 0;
-    int answer;
-    char choice;
-    int difficulty;
-    int MAX;
-
-    srand(time(0));
-
-    printf("Please select difficulty level\n");
-    printf("[1] Easy (1-30)\n[2] Normal (1-50)\n[3] Hard (1-100)\n");
-    scanf("%d", &difficulty);
-
-    switch (difficulty) {
-        case 1:
-            answer = (rand() % 30) + 1;
-            MAX = 30;
-            guess_limit = 10;
-            break;
-        case 2:
-            answer = (rand() % 50) + 1;
-            MAX = 50;
-            guess_limit = 6;
-            break;
-        case 3:
-            answer = (rand() % 100) + 1;
-            MAX = 100;
-            guess_limit = 3;
-            break;
-        default:
-            printf("Invalid difficulty level. Defaulting to normal mode.\n");
-            answer = (rand() % 50) + 1;
-            MAX = 30;
-            guess_limit = 6;
-            break;
+    // read user input
+    if (scanf_s("%d", &guess) != 1) {
+        while (getchar() != '\n'); //clear the buffer if input is not an integer
+        return -1; // indicate invalid input
     }
+    return guess; // return the valid guess
+}
+
+// main method
+int main() {
+    char play_again;
     do {
-        guesses = 0;
+        // variable declaration
+        int number, guess, tries = 0, difficulty;
 
-        do {
-            printf("Enter your guess (1-%d):\n", MAX);
-            if (scanf("%d", &guess) != 1 || guess < 1 || guess > MAX) {
-                printf("Invalid input. Please enter a positive integer between 1 and %d.\n", MAX);
-                while ((getchar()) != '\n');
-                continue;
+        // random number generator
+        srand(time(NULL));
+
+        // generate a random number between 1 and 100
+        number = rand() % 100 + 1;
+
+        // ask the user for difficulty level
+        printf("\nSelect difficulty level:\n");
+        printf("1. Easy (20 guesses)\n");
+        printf("2. Medium (10 guesses)\n");
+        printf("3. Hard (5 guesses)\n");
+        printf("\nEnter your choice (1/2/3): ");
+
+        // get valid choice
+        while (1) {
+            if (scanf_s("%d", &difficulty) != 1 || difficulty < 1 || difficulty > 3) {
+                printf("Invalid choice. Please select 1, 2, or 3: ");
+                while (getchar() != '\n'); // clear input buffer to prevent infinite loop on invalid input
             }
-
-            if (guess > answer) {
-                printf("Your guess is too high. Remaining guesses: %d\n", guess_limit - guesses - 1);
-            } else if (guess < answer) {
-                printf("Your guess is too low. Remaining guesses: %d\n", guess_limit - guesses - 1);
-            } else {
-                printf("Correct! The answer is %d.\n", answer);
+            else {
+                break;
             }
-            guesses++;
-        } while (guess != answer && guesses < guess_limit);
-
-        if (guesses >= guess_limit) {
-            printf("You've reached the guess limit. The answer was %d.\n", answer);
         }
 
-        printf("Do you want to play again? (y/n):\n");
-        scanf(" %c", &choice);
-    } while (choice == 'y' || choice == 'Y');
+        // set the maximum number of tries based on difficulty
+        int max_tries;
+        if (difficulty == 1) max_tries = 20;
+        else if (difficulty == 2) max_tries = 10;
+        else max_tries = 5;
 
+        printf("\nGuess the number between 1 and 100. You have %d guesses.\n", max_tries);
+
+        // main loop
+        while (tries < max_tries) {
+            printf("Enter your guess: ");
+            guess = get_valid_input(); // get input
+
+            // increment tries regardless of validity
+            tries++;
+
+            // check if the guess is within range
+            if (guess < 1 || guess > 100) {
+                printf("\nInvalid Number. Please enter a number between 1 and 100. Tries left: %d\n", max_tries - tries);
+                continue; // skip the rest of the loop and ask for input again
+            }
+
+            if (guess < number) { // check the guess if it's too low
+                printf("\nThe number you entered is too low, try another number.");
+            }
+            else if (guess > number) { // check the guess if it's too high
+                printf("\nThe number you entered is too high, try another number.");
+            }
+            else { // check the guess if it's correct
+                printf("Congratulations! You've guessed the number in %d tries.\n", tries);
+                break;
+            }
+
+            printf("Tries left: %d\n", max_tries - tries); // shows the number of tries left
+        }
+
+        // if the user runs out of tries
+        if (tries == max_tries && guess != number) {
+            printf("Sorry, you've used all your guesses. The number was %d.\n", number);
+        }
+
+        // ask if the user wants to play again
+        printf("\nDo you want to play again? (y/n): ");
+        while (getchar() != '\n'); // clear the buffer before taking new input
+        scanf_s("%c", &play_again, 1);
+
+    } while (play_again == 'y' || play_again == 'Y'); // makes sure capitalization will not be an issue
+
+    printf("Thanks for playing!\n");
     return 0;
 }
