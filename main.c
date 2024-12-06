@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ctype.h>
 
 // function to get valid user input
 int get_valid_input() {
     int guess;
     // read user input
     if (scanf_s("%d", &guess) != 1) {
-        while (getchar() != '\n'); //clear the buffer if input is not an integer
+        // clear the buffer if input is not an integer
+        while (getchar() != '\n');
         return -1; // indicate invalid input
     }
     return guess; // return the valid guess
@@ -27,17 +29,21 @@ int main() {
         number = rand() % 100 + 1;
 
         // ask the user for difficulty level
+        printf("\n==================================================================================================");
         printf("\nSelect difficulty level:\n");
         printf("1. Easy (20 guesses)\n");
         printf("2. Medium (10 guesses)\n");
         printf("3. Hard (5 guesses)\n");
+        printf("==================================================================================================");
         printf("\nEnter your choice (1/2/3): ");
 
         // get valid choice
         while (1) {
             if (scanf_s("%d", &difficulty) != 1 || difficulty < 1 || difficulty > 3) {
-                printf("Invalid choice. Please select 1, 2, or 3: ");
-                while (getchar() != '\n'); // clear input buffer to prevent infinite loop on invalid input
+                printf("==================================================================================================");
+                printf("\nInvalid choice. Please select 1, 2, or 3: ");
+                // clear input buffer to prevent infinite loop on invalid input
+                while (getchar() != '\n');
             }
             else {
                 break;
@@ -50,48 +56,62 @@ int main() {
         else if (difficulty == 2) max_tries = 10;
         else max_tries = 5;
 
+        printf("\n==================================================================================================");
         printf("\nGuess the number between 1 and 100. You have %d guesses.\n", max_tries);
+        printf("==================================================================================================");
 
-        // main loop
+        // main loop, until the player run out of tries
         while (tries < max_tries) {
-            printf("Enter your guess: ");
+            printf("\nEnter your guess:");
+            printf(" ");
+
             guess = get_valid_input(); // get input
 
             // increment tries regardless of validity
             tries++;
 
-            // check if the guess is within range
+            // check if the guess is valid
             if (guess < 1 || guess > 100) {
-                printf("\nInvalid Number. Please enter a number between 1 and 100. Tries left: %d\n", max_tries - tries);
+                printf("\n==================================================================================================");
+                printf("\nInvalid Input. Please enter a number between 1 and 100. Tries left: %d\n", max_tries - tries);
+                printf("==================================================================================================");
                 continue; // skip the rest of the loop and ask for input again
             }
 
             if (guess < number) { // check the guess if it's too low
-                printf("\nThe number you entered is too low, try another number.");
+                printf("\n==================================================================================================");
+                printf("\nThe number you entered is too low, try another number. Tries left: %d\n", max_tries - tries);
+                printf("==================================================================================================");
             }
             else if (guess > number) { // check the guess if it's too high
-                printf("\nThe number you entered is too high, try another number.");
+                printf("\n==================================================================================================");
+                printf("\nThe number you entered is too high, try another number. Tries left: %d\n", max_tries - tries);
+                printf("==================================================================================================");
             }
-            else { // check the guess if it's correct
-                printf("Congratulations! You've guessed the number in %d tries.\n", tries);
+            else { // guess is correct
+                printf("\n==================================================================================================");
+                printf("\nCongratulations! You've guessed the number in %d tries.\n", tries);
+                printf("==================================================================================================");
                 break;
             }
-
-            printf("Tries left: %d\n", max_tries - tries); // shows the number of tries left
-        }
-
-        // if the user runs out of tries
-        if (tries == max_tries && guess != number) {
-            printf("Sorry, you've used all your guesses. The number was %d.\n", number);
         }
 
         // ask if the user wants to play again
-        printf("\nDo you want to play again? (y/n): ");
-        while (getchar() != '\n'); // clear the buffer before taking new input
-        scanf_s("%c", &play_again, 1);
+        do {
+            printf("\nDo you want to play again? (y/n): ");
+            scanf_s(" %c", &play_again, 1); 
+            play_again = tolower(play_again); // convert input to lowercase for easier comparison
 
-    } while (play_again == 'y' || play_again == 'Y'); // makes sure capitalization will not be an issue
+            if (play_again != 'y' && play_again != 'n') {
+                printf("\n==================================================================================================\n");
+                printf("Invalid input. Please use y/n.");          // prompt if input is invalid
+                printf("\n==================================================================================================\n");
+            }
+        } while (play_again != 'n' && play_again != 'y'); 
+    } while (play_again != 'n');
 
-    printf("Thanks for playing!\n");
+    printf("\nThanks for playing!\n");
+    printf("\nFOC Project of Group #1 \nAustria, Leandro Gabriele A.\nAvendano, Bon Federique B.\nDe Robles, Leonicos Chael C.\nDetalo, Andrew G.\nFrancisco, Neil Joshua L.\nMarcelino, Mask G.\nNicolas, James Hancel R.\nRobles, Brylle G.\n");
+
     return 0;
 }
